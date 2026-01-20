@@ -18,20 +18,20 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final PatientService patientService;
     private final MedicalServiceService medicalServiceService;
-    private final PaymentTypeService paymentTypeService;
+    private final PaymentService paymentService;
     private final DoctorService doctorService;
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService,
                                  PatientService patientService,
                                  MedicalServiceService medicalServiceService,
-                                 PaymentTypeService paymentTypeService,
+                                 PaymentService paymentService,
                                  DoctorService doctorService
                                  ) {
         this.appointmentService = appointmentService;
         this.patientService = patientService;
         this.medicalServiceService = medicalServiceService;
-        this.paymentTypeService = paymentTypeService;
+        this.paymentService = paymentService;
         this.doctorService = doctorService;
     }
 
@@ -42,39 +42,37 @@ public class AppointmentController {
 
         Optional<Patient> patientOpt = patientService.getPatientById(patientId);
         Optional<MedicalService> medicalServiceOpt = medicalServiceService.getMedicalServiceById(medicalServiceId);
-        Appointment appointment = new Appointment();
-        appointment.setIsDoctor(false);
-        if (patientOpt.isPresent() && medicalServiceOpt.isPresent()) {
-            Patient patient = patientOpt.get();
-            MedicalService medicalService = medicalServiceOpt.get();
 
-            Optional<Doctor> doctorOpt = doctorService.getDoctorByMedicalService(medicalServiceId);
-            if (doctorOpt.isPresent()) {
-                appointment.setIsDoctor(true);
-            }
-
-            Optional<PaymentType> paymentType = paymentTypeService.getPriceForPatient(medicalServiceId,patientId);
-            appointment.setPatient(patient);
-            appointment.setMedicalService(medicalService);
-            appointment.setPayment(paymentType.get());
-            appointment.setAppointmentFrom(appointmentFrom);
-            appointment.setStatus("Appointed");
-
-
-            List<OffsetDateTime> availableSlots = appointmentService.getAvailableTimeSlots(medicalService,
-                    appointment.getAppointmentFrom().toLocalDate().toString());
-
-            if (!availableSlots.contains(appointment.getAppointmentFrom())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-                //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Requested appointment time is not available.");
-            }
-
-            Appointment savedAppointment = appointmentService.createAppointment(appointment);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedAppointment);
-
-        } else {
+        if (patientOpt.isEmpty() || medicalServiceOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+
+        Patient patient = patientOpt.get();
+        MedicalService medicalService = medicalServiceOpt.get();
+
+        Appointment appointment = new Appointment();
+        Optional<Doctor> doctorOpt = doctorService.getDoctorByMedicalService(medicalServiceId);
+        appointment.setIsDoctor(doctorOpt.isPresent());
+
+        appointment.setPatient(patient);
+        appointment.setMedicalService(medicalService);
+        appointment.setAppointmentFrom(appointmentFrom);
+        appointment.setStatus("Appointed");
+
+        Payment payment = paymentService.createPaymentForPatient(patient, medicalService, appointment);
+        appointment.setPayment(payment);
+
+        List<OffsetDateTime> availableSlots = appointmentService.getAvailableTimeSlots(
+                medicalService,
+                appointment.getAppointmentFrom().toLocalDate().toString()
+        );
+
+        if (!availableSlots.contains(appointment.getAppointmentFrom())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        Appointment savedAppointment = appointmentService.createAppointment(appointment);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAppointment);
     }
     @GetMapping("/available-times")
     public ResponseEntity<List<OffsetDateTime>> getAvailableTimeSlots(@RequestParam Integer medicalServiceId,

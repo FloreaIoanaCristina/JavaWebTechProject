@@ -3,6 +3,7 @@ package com.unibuc.management.entities;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -29,6 +30,9 @@ public class MedicalService {
     private Integer endHour;
 
     @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
     private Double rating;
 
     @Column(nullable = false)
@@ -41,13 +45,15 @@ public class MedicalService {
     @OneToMany(mappedBy = "medicalService")
     @JsonIgnore
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "patientAppointments"})
-    private Set<PaymentType> medicalServicePaymentTypes;
-
-    @OneToMany(mappedBy = "medicalService")
-    @JsonIgnore
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "patientAppointments"})
     private Set<Appointment> medicalServiceAppointments;
 
+    @ManyToMany
+    @JoinTable(
+            name = "service_insurance_coverage",
+            joinColumns = @JoinColumn(name = "id_medical_service"),
+            inverseJoinColumns = @JoinColumn(name = "id_insurance_provider")
+    )
+    private Set<InsuranceProvider> coveredByInsurances;
     public Integer getId() {
         return id;
     }
@@ -87,7 +93,13 @@ public class MedicalService {
     public void setEndHour(final Integer endHour) {
         this.endHour = endHour;
     }
+    public Double getPrice() {
+        return price;
+    }
 
+    public void setPrice(Double price) {
+        this.price = price;
+    }
     public Double getRating() {
         return rating;
     }
@@ -112,14 +124,6 @@ public class MedicalService {
         this.medicalServiceDoctors = medicalServiceDoctors;
     }
 
-    public Set<PaymentType> getMedicalServicePaymentTypes() {
-        return medicalServicePaymentTypes;
-    }
-
-    public void setMedicalServicePaymentTypes(final Set<PaymentType> medicalServicePaymentTypes) {
-        this.medicalServicePaymentTypes = medicalServicePaymentTypes;
-    }
-
     public Set<Appointment> getMedicalServiceAppointments() {
         return medicalServiceAppointments;
     }
@@ -128,4 +132,11 @@ public class MedicalService {
         this.medicalServiceAppointments = medicalServiceAppointments;
     }
 
+    public Set<InsuranceProvider> getCoveredByInsurances() {
+        return coveredByInsurances;
+    }
+
+    public void setCoveredByInsurances(Set<InsuranceProvider> coveredByInsurances) {
+        this.coveredByInsurances = coveredByInsurances;
+    }
 }

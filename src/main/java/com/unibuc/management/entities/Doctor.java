@@ -16,7 +16,8 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Integer id;
-
+    @Column(nullable = false, length = 50)
+    private String name;
     @Column(nullable = false, length = 50)
     private String office;
 
@@ -38,6 +39,13 @@ public class Doctor {
 
     public void setId(final Integer id) {
         this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getOffice() {

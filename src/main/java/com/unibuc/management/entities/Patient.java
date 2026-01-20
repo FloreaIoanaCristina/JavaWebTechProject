@@ -20,11 +20,8 @@ public class Patient {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(columnDefinition = "text")
+    @Column(name = "medical_record", length = 4000)
     private String medicalRecord;
-
-    @Column(nullable = false)
-    private Boolean insurance;
 
     @Column(nullable = false)
     private Boolean subscription;
@@ -37,6 +34,10 @@ public class Patient {
 
     @OneToMany(mappedBy = "patient")
     private Set<Appointment> patientAppointments;
+
+    @ManyToOne
+    @JoinColumn(name = "insurance_provider_id")
+    private InsuranceProvider insuranceProvider;
 
     public Integer getId() {
         return id;
@@ -60,14 +61,6 @@ public class Patient {
 
     public void setMedicalRecord(final String medicalRecord) {
         this.medicalRecord = medicalRecord;
-    }
-
-    public Boolean getInsurance() {
-        return insurance;
-    }
-
-    public void setInsurance(final Boolean insurance) {
-        this.insurance = insurance;
     }
 
     public Boolean getSubscription() {
@@ -100,6 +93,14 @@ public class Patient {
 
     public void setPatientAppointments(final Set<Appointment> patientAppointments) {
         this.patientAppointments = patientAppointments;
+    }
+
+    public InsuranceProvider getInsuranceProvider() {
+        return insuranceProvider;
+    }
+
+    public void setInsuranceProvider(InsuranceProvider insuranceProvider) {
+        this.insuranceProvider = insuranceProvider;
     }
 
 }

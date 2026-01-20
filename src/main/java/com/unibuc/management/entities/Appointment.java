@@ -24,6 +24,8 @@ public class Appointment {
 
     @Column(nullable = false, length = 50)
     private String status;
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL)
+    private Payment payment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idMedicalService", nullable = false)
@@ -31,17 +33,11 @@ public class Appointment {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "patientAppointments"})
     private MedicalService medicalService;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idPatient", nullable = false)
     @JsonBackReference
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "patientAppointments"})
     private Patient patient;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "patientAppointments"})
-    @JoinColumn(name = "idPayment", nullable = false)
-    @JsonManagedReference
-    private PaymentType payment;
 
     public Integer getId() {
         return id;
@@ -91,12 +87,14 @@ public class Appointment {
         this.patient = patient;
     }
 
-    public PaymentType getPayment() {
+    public Payment getPayment() {
         return payment;
     }
 
-    public void setPayment(final PaymentType payment) {
+    public void setPayment(final Payment payment) {
         this.payment = payment;
     }
+
+
 
 }
