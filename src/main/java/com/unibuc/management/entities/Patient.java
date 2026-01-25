@@ -39,6 +39,10 @@ public class Patient {
     @JoinColumn(name = "insurance_provider_id")
     private InsuranceProvider insuranceProvider;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public Integer getId() {
         return id;
     }
