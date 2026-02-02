@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
+import java.util.Date;
 import java.util.Set;
 
 
@@ -27,7 +28,7 @@ public class Patient {
     private Boolean subscription;
 
     @Column(nullable = false)
-    private Integer age;
+    private Date dateOfBirth;
 
     @Column(nullable = false)
     private Boolean sex;
@@ -75,12 +76,12 @@ public class Patient {
         this.subscription = subscription;
     }
 
-    public Integer getAge() {
-        return age;
+    public Date getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setAge(final Integer age) {
-        this.age = age;
+    public void setDateOfBirth(final Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public Boolean getSex() {

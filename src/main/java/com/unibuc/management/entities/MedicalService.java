@@ -46,14 +46,9 @@ public class MedicalService {
     @JsonIgnore
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "patientAppointments"})
     private Set<Appointment> medicalServiceAppointments;
-
-    @ManyToMany
-    @JoinTable(
-            name = "service_insurance_coverage",
-            joinColumns = @JoinColumn(name = "id_medical_service"),
-            inverseJoinColumns = @JoinColumn(name = "id_insurance_provider")
-    )
-    private Set<InsuranceProvider> coveredByInsurances;
+    @OneToMany(mappedBy = "medicalService")
+    @JsonIgnore
+    private Set<ServiceCoverage> coveredByInsurances;
     public Integer getId() {
         return id;
     }
@@ -132,11 +127,11 @@ public class MedicalService {
         this.medicalServiceAppointments = medicalServiceAppointments;
     }
 
-    public Set<InsuranceProvider> getCoveredByInsurances() {
+    public Set<ServiceCoverage> getCoveredByInsurances() {
         return coveredByInsurances;
     }
 
-    public void setCoveredByInsurances(Set<InsuranceProvider> coveredByInsurances) {
+    public void setCoveredByInsurances(Set<ServiceCoverage> coveredByInsurances) {
         this.coveredByInsurances = coveredByInsurances;
     }
 }

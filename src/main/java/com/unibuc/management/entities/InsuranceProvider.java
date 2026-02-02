@@ -16,9 +16,9 @@ public class InsuranceProvider {
     @Column(length = 20)
     private String contactNumber;
 
-    @ManyToMany(mappedBy = "coveredByInsurances")
+    @OneToMany(mappedBy = "insuranceProvider")
     @JsonIgnore
-    private Set<MedicalService> coveredServices;
+    private Set<ServiceCoverage> coveredServices;
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -26,6 +26,6 @@ public class InsuranceProvider {
     public void setName(String name) { this.name = name; }
     public String getContactNumber() { return contactNumber; }
     public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
-    public Set<MedicalService> getCoveredServices() { return coveredServices; }
-    public void setCoveredServices(Set<MedicalService> coveredServices) { this.coveredServices = coveredServices; }
+    public Set<ServiceCoverage> getCoveredServices() { return coveredServices; }
+    public void setCoveredServices(Set<ServiceCoverage> coveredServices) { this.coveredServices = coveredServices; }
 }
